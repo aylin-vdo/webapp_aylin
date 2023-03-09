@@ -1,24 +1,34 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+
 namespace webapp_aylin
 {
-	public class Startup
-	{
-		public Startup(IConfiguration configuration)
-		{
-			Configuration = configuration;
-		}
-		public IConfiguration Configuration { get; }
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+        public IConfiguration Configuration { get; }
 
-		public void ConfigureServices(IServiceCollection services)
-		{
-            services.AddControllers();
+        public void ConfigureServices(IServiceCollection services)
+        {
+
+            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            services.AddDbContext<AplicationDbContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("SqlConnection")));
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddControllersWithViews();
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "webapp_aylin", Version = "v1" });
+            });
 
 
         }
@@ -29,14 +39,18 @@ namespace webapp_aylin
             // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                
             }
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

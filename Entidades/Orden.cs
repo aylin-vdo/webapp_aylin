@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace webapp_aylin.Entidades
 {
     public class Orden
     {
-        [Required(ErrorMessage = "Se requiere el campo ID")]
+        
+        [Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdOrden { get; set; }
         [Required(ErrorMessage = "Se requiere el campo ID cliente")]
         public int IdCliente { get; set; }
