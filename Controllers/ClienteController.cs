@@ -37,7 +37,8 @@ namespace webapp_aylin.Controllers
 
         [HttpPost]
         public async Task<ActionResult> Post(Cliente cliente)
-        {   
+        {
+            
             dbContext.Add(cliente);
             await dbContext.SaveChangesAsync();
             return Ok();
